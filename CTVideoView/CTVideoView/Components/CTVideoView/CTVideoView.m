@@ -7,6 +7,7 @@
 //
 
 #import "CTVideoView.h"
+#import "CTAssetResourceLoaderDelegate.h"
 
 #import "CTVideoView+Time.h"
 #import "CTVideoView+Download.h"
@@ -38,6 +39,9 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
 @property (nonatomic, strong, readwrite) AVURLAsset *asset;
 @property (nonatomic, strong, readwrite) AVPlayerItem *playerItem;
 
+@property (nonatomic, strong) CTAssetResourceLoaderDelegate *resourceLoaderDelegate;
+@property (nonatomic, strong) NSString *originURLScheme;
+
 @end
 
 @implementation CTVideoView
@@ -67,6 +71,9 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
         _shouldReplayWhenFinish = NO;
         _shouldChangeOrientationToFitVideo = NO;
         _isPreparedForPlay = NO;
+
+        _shouldCacheWhilePlaying = YES;
+        _maxCacheSize = 100;
 
         if ([self.playerLayer isKindOfClass:[AVPlayerLayer class]]) {
             self.playerLayer.player = self.player;
@@ -202,19 +209,35 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
     }
 }
 
+#pragma mark - private methods
 - (void)refreshUrl
 {
-    if ([[self.videoUrl pathExtension] isEqualToString:@"m3u8"]) {
+    BOOL shouldContinue = YES;
+
+    if (shouldContinue && self.assetToPlay != nil) {
+        shouldContinue = NO;
+        self.videoUrlType = CTVideoViewVideoUrlTypeAsset;
+        self.actualVideoUrlType = CTVideoViewVideoUrlTypeAsset;
+    }
+
+    if (shouldContinue && [[self.videoUrl pathExtension] isEqualToString:@"m3u8"]) {
+        shouldContinue = NO;
         self.videoUrlType = CTVideoViewVideoUrlTypeLiveStream;
         self.actualVideoUrlType = CTVideoViewVideoUrlTypeLiveStream;
-    } else if ([[NSFileManager defaultManager] fileExistsAtPath:[self.videoUrl path]]) {
+    }
+
+    if (shouldContinue && [[NSFileManager defaultManager] fileExistsAtPath:[self.videoUrl path]]) {
+        shouldContinue = NO;
         self.videoUrlType = CTVideoViewVideoUrlTypeNative;
         self.actualVideoUrlType = CTVideoViewVideoUrlTypeNative;
-    } else {
+    }
+
+    if (shouldContinue) {
+        shouldContinue = NO;
         self.videoUrlType = CTVideoViewVideoUrlTypeRemote;
         self.actualVideoUrlType = CTVideoViewVideoUrlTypeRemote;
     }
-    
+
     self.actualVideoPlayingUrl = self.videoUrl;
     if (self.actualVideoUrlType != CTVideoViewVideoUrlTypeNative) {
         NSURL *nativeUrl = [[CTVideoManager sharedInstance] nativeUrlForRemoteUrl:self.videoUrl];
@@ -223,14 +246,32 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
             self.actualVideoUrlType = CTVideoViewVideoUrlTypeNative;
         }
     }
+
+    if (self.shouldCacheWhilePlaying) {
+        if (self.actualVideoUrlType == CTVideoViewVideoUrlTypeRemote || self.actualVideoUrlType == CTVideoViewVideoUrlTypeLiveStream) {
+            self.actualVideoUrlType = CTVideoViewVideoUrlTypeCacheWhilePlaying;
+            NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:self.actualVideoPlayingUrl resolvingAgainstBaseURL:YES];
+            self.originURLScheme = urlComponents.scheme;
+            urlComponents.scheme = @"casa";
+            self.actualVideoPlayingUrl = urlComponents.URL;
+        }
+    }
+
     if (![self.asset.URL isEqual:self.actualVideoPlayingUrl]) {
-        self.asset = [AVURLAsset assetWithURL:self.actualVideoPlayingUrl];
+        AVURLAsset *asset = [AVURLAsset assetWithURL:self.actualVideoPlayingUrl];
+
         self.prepareStatus = CTVideoViewPrepareStatusNotPrepared;
         self.isVideoUrlChanged = YES;
+
+        if (self.shouldCacheWhilePlaying) {
+            AVAssetResourceLoader *resourceLoader = asset.resourceLoader;
+            [resourceLoader setDelegate:self.resourceLoaderDelegate queue:dispatch_queue_create("Casa Resource Loader Delegate Queue", nil)];
+        }
+
+        self.asset = asset;
     }
 }
 
-#pragma mark - private methods
 - (void)asynchronouslyLoadURLAsset:(AVAsset *)asset
 {
     if ([self.operationDelegate respondsToSelector:@selector(videoViewWillStartPrepare:)]) {
@@ -455,6 +496,14 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
     if (videoContentMode == CTVideoViewContentModeResizeAspectFill) {
         self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     }
+}
+
+- (CTAssetResourceLoaderDelegate *)resourceLoaderDelegate
+{
+    if (_resourceLoaderDelegate == nil) {
+        _resourceLoaderDelegate = [[CTAssetResourceLoaderDelegate alloc] init];
+    }
+    return _resourceLoaderDelegate;
 }
 
 @end

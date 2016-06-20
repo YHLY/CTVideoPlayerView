@@ -71,6 +71,7 @@ typedef NS_ENUM(NSUInteger, CTVideoViewVideoUrlType) {
     CTVideoViewVideoUrlTypeNative,
     CTVideoViewVideoUrlTypeLiveStream,
     CTVideoViewVideoUrlTypeAsset,
+    CTVideoViewVideoUrlTypeCacheWhilePlaying,
 };
 
 typedef NS_ENUM(NSUInteger, CTVideoViewContentMode) {

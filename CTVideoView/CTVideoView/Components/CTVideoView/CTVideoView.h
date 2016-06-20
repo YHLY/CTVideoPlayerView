@@ -32,6 +32,9 @@
 @property (nonatomic, assign) BOOL shouldReplayWhenFinish; // default is NO
 @property (nonatomic, assign) BOOL shouldChangeOrientationToFitVideo; // default is NO
 
+@property (nonatomic, assign) BOOL shouldCacheWhilePlaying; // default is YES
+@property (nonatomic, assign) CGFloat maxCacheSize; // default is 100, means 100MB
+
 @property (nonatomic, assign) CTVideoViewStalledStrategy stalledStrategy;
 @property (nonatomic, assign) CTVideoViewContentMode videoContentMode;
 

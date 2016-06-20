@@ -18,6 +18,7 @@
 		4A19F8131CF5E4B80026B9BC /* CTVideoRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A19F80E1CF5E4B80026B9BC /* CTVideoRecord.m */; };
 		4A19F8141CF5E4B80026B9BC /* CTVideoTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A19F8111CF5E4B80026B9BC /* CTVideoTable.m */; };
 		4A19F8181CF5EA7D0026B9BC /* DownloadThenPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A19F8171CF5EA7D0026B9BC /* DownloadThenPlayViewController.m */; };
+		4A7DB6BA1D1815690028EC6C /* CTAssetResourceLoaderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A7DB6B91D1815690028EC6C /* CTAssetResourceLoaderDelegate.m */; };
 		4AAE2A871CF21FB900139C9C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAE2A861CF21FB900139C9C /* main.m */; };
 		4AAE2A8A1CF21FB900139C9C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAE2A891CF21FB900139C9C /* AppDelegate.m */; };
 		4AAE2A901CF21FB900139C9C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAE2A8E1CF21FB900139C9C /* Main.storyboard */; };
@@ -52,6 +53,8 @@
 		4A19F8111CF5E4B80026B9BC /* CTVideoTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTVideoTable.m; sourceTree = "<group>"; };
 		4A19F8161CF5EA7D0026B9BC /* DownloadThenPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DownloadThenPlayViewController.h; sourceTree = "<group>"; };
 		4A19F8171CF5EA7D0026B9BC /* DownloadThenPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DownloadThenPlayViewController.m; sourceTree = "<group>"; };
+		4A7DB6B81D1815690028EC6C /* CTAssetResourceLoaderDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTAssetResourceLoaderDelegate.h; sourceTree = "<group>"; };
+		4A7DB6B91D1815690028EC6C /* CTAssetResourceLoaderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTAssetResourceLoaderDelegate.m; sourceTree = "<group>"; };
 		4AAE2A821CF21FB900139C9C /* CTVideoView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CTVideoView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AAE2A861CF21FB900139C9C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4AAE2A881CF21FB900139C9C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -179,6 +182,15 @@
 				4A19F8171CF5EA7D0026B9BC /* DownloadThenPlayViewController.m */,
 			);
 			path = DownloadThenPlay;
+			sourceTree = "<group>";
+		};
+		4A7DB6B71D1815510028EC6C /* AssetResourceLoaderDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				4A7DB6B81D1815690028EC6C /* CTAssetResourceLoaderDelegate.h */,
+				4A7DB6B91D1815690028EC6C /* CTAssetResourceLoaderDelegate.m */,
+			);
+			path = AssetResourceLoaderDelegate;
 			sourceTree = "<group>";
 		};
 		4AAE2A791CF21FB900139C9C = {
@@ -311,6 +323,7 @@
 		4AD203231CF264D9004E3A97 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				4A7DB6B71D1815510028EC6C /* AssetResourceLoaderDelegate */,
 				4AD203241CF264D9004E3A97 /* CTVideoView */,
 				4A19F8061CF5E4860026B9BC /* DataCenter */,
 				4A19F8051CF5E4800026B9BC /* DownloadManager */,
@@ -482,6 +495,7 @@
 				4A09440A1CF2287F00BC21AA /* ViewController.m in Sources */,
 				4AD203201CF260C9004E3A97 /* CTVideoView+VideoCoverView.m in Sources */,
 				4AF6EFA01CF5787600A1E1C9 /* AVAsset+CTVideoView.m in Sources */,
+				4A7DB6BA1D1815690028EC6C /* CTAssetResourceLoaderDelegate.m in Sources */,
 				4A0944011CF2250A00BC21AA /* SingleVideoViewController.m in Sources */,
 				4A19F8181CF5EA7D0026B9BC /* DownloadThenPlayViewController.m in Sources */,
 				4AD2031E1CF260C9004E3A97 /* CTVideoView+OperationButtons.m in Sources */,
