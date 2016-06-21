@@ -119,53 +119,60 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
         return;
     }
 
-    if (self.assetToPlay) {
-        self.prepareStatus = CTVideoViewPrepareStatusPreparing;
-        [self asynchronouslyLoadURLAsset:self.assetToPlay];
-        return;
-    }
-    
-    if (self.asset && self.prepareStatus == CTVideoViewPrepareStatusNotPrepared) {
-        self.prepareStatus = CTVideoViewPrepareStatusPreparing;
-        [self asynchronouslyLoadURLAsset:self.asset];
-        return;
-    }
-    
-    if (self.prepareStatus == CTVideoViewPrepareStatusPrepareFinished) {
-        [self checkAndPlayAfterPrepareFinished];
-        return;
-    }
+//    if (self.assetToPlay) {
+//        self.prepareStatus = CTVideoViewPrepareStatusPreparing;
+//        [self asynchronouslyLoadURLAsset:self.assetToPlay];
+//        return;
+//    }
+//    
+//    if (self.asset && self.prepareStatus == CTVideoViewPrepareStatusNotPrepared) {
+//        self.prepareStatus = CTVideoViewPrepareStatusPreparing;
+//        [self asynchronouslyLoadURLAsset:self.asset];
+//        return;
+//    }
+//    
+//    if (self.prepareStatus == CTVideoViewPrepareStatusPrepareFinished) {
+//        [self checkAndPlayAfterPrepareFinished];
+//        return;
+//    }
 }
 
 - (void)play
 {
-    [self hidePlayButton];
-    if (self.isPlaying) {
-        [self hideCoverView];
-        return;
+    /* --------------------------------- */
+    if (self.playerItem == nil) {
+        self.playerItem = [AVPlayerItem playerItemWithAsset:self.asset];
     }
-    
-    if ([self.operationDelegate respondsToSelector:@selector(videoViewWillStartPlaying:)]) {
-        [self.operationDelegate videoViewWillStartPlaying:self];
-    }
+    [self.player play];
+    /* --------------------------------- */
 
-    [self hideRetryButton];
-    if (self.prepareStatus == CTVideoViewPrepareStatusPrepareFinished) {
-        // hide cover view has moved to CTVideoView+Time
-        [self willStartPlay];
-
-        NSInteger currentPlaySecond = (NSInteger)(self.currentPlaySecond * 100);
-        NSInteger totalDurationSeconds = (NSInteger)(self.totalDurationSeconds * 100);
-        if (currentPlaySecond == totalDurationSeconds && totalDurationSeconds > 0) {
-            [self replay];
-        } else {
-            [self.player play];
-        }
-
-    } else {
-        self.isPreparedForPlay = YES;
-        [self prepare];
-    }
+//    [self hidePlayButton];
+//    if (self.isPlaying) {
+//        [self hideCoverView];
+//        return;
+//    }
+//    
+//    if ([self.operationDelegate respondsToSelector:@selector(videoViewWillStartPlaying:)]) {
+//        [self.operationDelegate videoViewWillStartPlaying:self];
+//    }
+//
+//    [self hideRetryButton];
+//    if (self.prepareStatus == CTVideoViewPrepareStatusPrepareFinished) {
+//        // hide cover view has moved to CTVideoView+Time
+//        [self willStartPlay];
+//
+//        NSInteger currentPlaySecond = (NSInteger)(self.currentPlaySecond * 100);
+//        NSInteger totalDurationSeconds = (NSInteger)(self.totalDurationSeconds * 100);
+//        if (currentPlaySecond == totalDurationSeconds && totalDurationSeconds > 0) {
+//            [self replay];
+//        } else {
+//            [self.player play];
+//        }
+//
+//    } else {
+//        self.isPreparedForPlay = YES;
+//        [self prepare];
+//    }
 }
 
 - (void)pause
@@ -213,6 +220,7 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
 {
     BOOL shouldContinue = YES;
 
+    // config URL type
     if (shouldContinue && self.assetToPlay != nil) {
         shouldContinue = NO;
         self.videoUrlType = CTVideoViewVideoUrlTypeAsset;
@@ -237,6 +245,7 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
         self.actualVideoUrlType = CTVideoViewVideoUrlTypeRemote;
     }
 
+    // config actual URL
     self.actualVideoPlayingUrl = self.videoUrl;
     if (self.actualVideoUrlType != CTVideoViewVideoUrlTypeNative) {
         NSURL *nativeUrl = [[CTVideoManager sharedInstance] nativeUrlForRemoteUrl:self.videoUrl];
@@ -247,7 +256,7 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
     }
 
     if (self.shouldCacheWhilePlaying) {
-        if (self.actualVideoUrlType == CTVideoViewVideoUrlTypeRemote || self.actualVideoUrlType == CTVideoViewVideoUrlTypeLiveStream) {
+        if ((self.actualVideoUrlType == CTVideoViewVideoUrlTypeRemote || self.actualVideoUrlType == CTVideoViewVideoUrlTypeLiveStream) && self.videoUrl != nil) {
             self.actualVideoUrlType = CTVideoViewVideoUrlTypeCacheWhilePlaying;
             NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:self.actualVideoPlayingUrl resolvingAgainstBaseURL:YES];
             self.resourceLoaderDelegate.originScheme = urlComponents.scheme;
@@ -256,11 +265,12 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
         }
     }
 
+    // config asset
     if (![self.asset.URL isEqual:self.actualVideoPlayingUrl]) {
         AVURLAsset *asset = [AVURLAsset assetWithURL:self.actualVideoPlayingUrl];
 
         if (self.shouldCacheWhilePlaying) {
-            [asset.resourceLoader setDelegate:self.resourceLoaderDelegate queue:dispatch_queue_create("Casa Resource Loader Delegate Queue", nil)];
+            [asset.resourceLoader setDelegate:self.resourceLoaderDelegate queue:dispatch_get_main_queue()];
         }
 
         self.asset = asset;
