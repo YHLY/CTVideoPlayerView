@@ -23,10 +23,11 @@
 @implementation SingleVideoViewController
 
 #pragma mark - life cycle
-- (instancetype)initWithVideoUrlString:(NSString *)urlString
+- (instancetype)initWithVideoUrlString:(NSString *)urlString shouldCacheWhilePlaying:(BOOL)shouldCacheWhilePlaying
 {
     self = [super init];
     if (self) {
+        self.videoView.shouldCacheWhilePlaying = shouldCacheWhilePlaying;
         self.videoView.videoUrl = [NSURL URLWithString:urlString];
         [self.videoView prepare];
     }

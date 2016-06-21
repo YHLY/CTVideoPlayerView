@@ -47,7 +47,7 @@
 
     NSDictionary *info = self.dataSource[indexPath.row];
     if (indexPath.row < 4) {
-        viewControllerToPush = [[SingleVideoViewController alloc] initWithVideoUrlString:info[@"url"]];
+        viewControllerToPush = [[SingleVideoViewController alloc] initWithVideoUrlString:info[@"url"] shouldCacheWhilePlaying:NO];
     }
     if (indexPath.row == 4) {
         viewControllerToPush = [[VideoTableViewController alloc] initWithVideoUrlList:info[@"urlList"]];
@@ -57,6 +57,9 @@
     }
     if (indexPath.row == 6) {
         viewControllerToPush = [[PlayAssetViewController alloc] initWithAsset:info[@"asset"]];
+    }
+    if (indexPath.row == 7) {
+        viewControllerToPush = [[SingleVideoViewController alloc] initWithVideoUrlString:info[@"url"] shouldCacheWhilePlaying:YES];
     }
 
     if (viewControllerToPush) {
@@ -133,6 +136,10 @@
                         @{
                             @"title":@"play asset",
                             @"asset":[AVURLAsset assetWithURL:[[NSBundle mainBundle] URLForResource:@"a" withExtension:@"mp4"]]
+                            },
+                        @{
+                            @"title":@"play & cache",
+                            @"asset":@"http://7xs8ft.com2.z0.glb.qiniucdn.com/rcd_vid_865e1fff817746d29ecc4996f93b7f74"
                             },
                         ];
     }

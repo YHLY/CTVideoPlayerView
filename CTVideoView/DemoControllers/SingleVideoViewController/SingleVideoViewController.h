@@ -10,6 +10,6 @@
 
 @interface SingleVideoViewController : UIViewController
 
-- (instancetype)initWithVideoUrlString:(NSString *)urlString;
+- (instancetype)initWithVideoUrlString:(NSString *)urlString shouldCacheWhilePlaying:(BOOL)shouldCacheWhilePlaying;
 
 @end
