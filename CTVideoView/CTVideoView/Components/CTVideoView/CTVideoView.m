@@ -40,7 +40,6 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
 @property (nonatomic, strong, readwrite) AVPlayerItem *playerItem;
 
 @property (nonatomic, strong) CTAssetResourceLoaderDelegate *resourceLoaderDelegate;
-@property (nonatomic, strong) NSString *originURLScheme;
 
 @end
 
@@ -251,7 +250,7 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
         if (self.actualVideoUrlType == CTVideoViewVideoUrlTypeRemote || self.actualVideoUrlType == CTVideoViewVideoUrlTypeLiveStream) {
             self.actualVideoUrlType = CTVideoViewVideoUrlTypeCacheWhilePlaying;
             NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:self.actualVideoPlayingUrl resolvingAgainstBaseURL:YES];
-            self.originURLScheme = urlComponents.scheme;
+            self.resourceLoaderDelegate.originScheme = urlComponents.scheme;
             urlComponents.scheme = @"casa";
             self.actualVideoPlayingUrl = urlComponents.URL;
         }
@@ -260,15 +259,13 @@ static void * kCTVideoViewKVOContext = &kCTVideoViewKVOContext;
     if (![self.asset.URL isEqual:self.actualVideoPlayingUrl]) {
         AVURLAsset *asset = [AVURLAsset assetWithURL:self.actualVideoPlayingUrl];
 
-        self.prepareStatus = CTVideoViewPrepareStatusNotPrepared;
-        self.isVideoUrlChanged = YES;
-
         if (self.shouldCacheWhilePlaying) {
-            AVAssetResourceLoader *resourceLoader = asset.resourceLoader;
-            [resourceLoader setDelegate:self.resourceLoaderDelegate queue:dispatch_queue_create("Casa Resource Loader Delegate Queue", nil)];
+            [asset.resourceLoader setDelegate:self.resourceLoaderDelegate queue:dispatch_queue_create("Casa Resource Loader Delegate Queue", nil)];
         }
 
         self.asset = asset;
+        self.prepareStatus = CTVideoViewPrepareStatusNotPrepared;
+        self.isVideoUrlChanged = YES;
     }
 }
 

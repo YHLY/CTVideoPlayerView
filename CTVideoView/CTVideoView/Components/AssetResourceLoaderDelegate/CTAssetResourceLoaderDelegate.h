@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AFNetworking/AFNetworking.h>
 
 @interface CTAssetResourceLoaderDelegate : NSObject <AVAssetResourceLoaderDelegate>
+
+@property (nonatomic, strong) NSString *originScheme;
 
 @end
